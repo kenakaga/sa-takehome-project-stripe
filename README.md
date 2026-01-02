@@ -27,3 +27,4 @@ flask run
 ```
 
 Navigate to [http://localhost:5000](http://localhost:5000) to view the index page.
+# sa-takehome-project-stripe

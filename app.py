@@ -3,7 +3,8 @@ import stripe
 import json
 
 # This is your test secret API key.
-stripe.api_key = 'sk_test_51Shkl1CbmJ6yrP5BnXZKcu5LhzlEL23WtYIXihQRHfcvOKpkLEmkYk6go7uD4w7TPZHNOozX4PUbsghGgQxrnw9W00n0Ordekt'
+stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+STRIPE_PUBLISHABLE_KEY = os.environ["STRIPE_PUBLISHABLE_KEY"]
 
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify
@@ -42,8 +43,7 @@ def checkout():
     # Included in layout view, feel free to assign error
     error = 'No item selected'
 
-  return render_template('checkout.html', title=title, amount=amount, error=error, item_id=item)
-
+  return render_template('checkout.html', title=title, amount=amount, error=error, item_id=item, stripe_pk=STRIPE_PUBLISHABLE_KEY)
 
 
 PRICE_BY_ITEM = {
@@ -81,16 +81,10 @@ def create_payment():
     except Exception as e:
         return jsonify(error=str(e)), 403
 
-
-# Success route
-@app.route('/success', methods=['GET'])
-def success():
-  return render_template('success.html')
-
 # Complete route
 @app.route('/complete', methods=['GET'])
 def complete():
-    return render_template('complete.html')
+    return render_template('complete.html', stripe_pk=STRIPE_PUBLISHABLE_KEY)
 
 if __name__ == '__main__':
   app.run(port=5000, host='0.0.0.0', debug=True)
