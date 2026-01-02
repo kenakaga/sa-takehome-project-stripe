@@ -16,6 +16,22 @@ app = Flask(__name__,
   template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "views"),
   static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "public"))
 
+# Just hardcoding amounts here to avoid using a database
+PRODUCTS = {
+    "1": {
+        "title": "The Art of Doing Science and Engineering",
+        "amount": 2300,
+    },
+    "2": {
+        "title": "The Making of Prince of Persia",
+        "amount": 2500,
+    },
+    "3": {
+        "title": "Working in Public",
+        "amount": 2800,
+    },
+}
+
 # Home route
 @app.route('/', methods=['GET'])
 def index():
@@ -24,54 +40,37 @@ def index():
 # Checkout route
 @app.route('/checkout', methods=['GET'])
 def checkout():
-  # Just hardcoding amounts here to avoid using a database
-  item = request.args.get('item')
-  title = None
-  amount = None
+  item = request.args.get("item")
+  product = PRODUCTS.get(item)
   error = None
 
-  if item == '1':
-    title = 'The Art of Doing Science and Engineering'
-    amount = 2300
-  elif item == '2':
-    title = 'The Making of Prince of Persia: Journals 1985-1993'
-    amount = 2500
-  elif item == '3':
-    title = 'Working in Public: The Making and Maintenance of Open Source'
-    amount = 2800
-  else:
-    # Included in layout view, feel free to assign error
-    error = 'No item selected'
+  if not product:
+     error = 'No item selected'
 
-  return render_template('checkout.html', title=title, amount=amount, error=error, item_id=item, stripe_pk=STRIPE_PUBLISHABLE_KEY)
+  return render_template('checkout.html', item_id=item, title=product["title"], amount=product["amount"], error=error, stripe_pk=STRIPE_PUBLISHABLE_KEY)
 
-
-PRICE_BY_ITEM = {
-    "1": 2300,
-    "2": 2500,
-    "3": 2800,
-}
-
+# Calculate order amount
 def calculate_order_amount(items):
     # items: [{"id": "1"}, {"id": "2"}] のように送られてくる想定
     total = 0
     for item in items:
-        item_id = str(item.get("id"))
-        if item_id not in PRICE_BY_ITEM:
-            raise ValueError(f"Invalid item id: {item_id}")
-        total += PRICE_BY_ITEM[item_id]
+        product = PRODUCTS.get(str(item["id"]))
+        if not product:
+            raise ValueError(f"Invalid item id: {item['id']}")
+        total += product["amount"]
     return total
 
+# Create payment intent route
 @app.route('/create-payment-intent', methods=['POST'])
 def create_payment():
     try:
         data = json.loads(request.data)
         # Create a PaymentIntent with the order amount and currency
         intent = stripe.PaymentIntent.create(
-            amount=calculate_order_amount(data['items']),
-            currency='usd',
+            amount = calculate_order_amount(data['items']),
+            currency = 'usd',
             # In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-            automatic_payment_methods={
+            automatic_payment_methods = {
                 'enabled': True,
             },
         )
