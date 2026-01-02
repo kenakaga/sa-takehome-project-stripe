@@ -12,12 +12,12 @@
   <link rel="stylesheet" href="/css/checkout.css" />
   <script src="https://js.stripe.com/v3/"></script>
   <script src="/js/checkout.js" defer></script>
-<script>
-  const AMOUNT = {{ amount | tojson }};
-  const TITLE = {{ title | tojson }};
-  const ITEM_ID = {{ item_id | tojson }};
-  const STRIPE_PUBLISHABLE_KEY = {{ stripe_pk | tojson }};
-</script>
+  <script>
+    const AMOUNT = {{ amount | tojson }};
+    const TITLE = {{ title | tojson }};
+    const ITEM_ID = {{ item_id | tojson }};
+    const STRIPE_PUBLISHABLE_KEY = {{ stripe_pk | tojson }};
+  </script>
 </head>
 {% endblock %}
 
@@ -40,10 +40,7 @@
       <div class="card-body">
         <!-- Display a payment form -->
         <form id="payment-form">
-          <div>
-            <label for="email">Email address</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="you@email.com">
-          </div>
+          <div id="link-authentication-element"></div>
           <div id="payment-element">
             <!--Stripe.js injects the Payment Element-->
           </div>

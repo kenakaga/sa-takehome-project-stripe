@@ -30,21 +30,25 @@ async function initialize() {
     layout: "accordion",
   };
 
+  const linkAuthenticationElement = elements.create("linkAuthentication", { defaultValues: { email: "foo@bar.com" } });
+  linkAuthenticationElement.mount("#link-authentication-element");
   const paymentElement = elements.create("payment", paymentElementOptions);
   paymentElement.mount("#payment-element");
 }
+
+linkAuthenticationElement.on('change', (event) => {
+  const email = event.value.email;
+});
 
 async function handleSubmit(e) {
   e.preventDefault();
   setLoading(true);
 
-  const email = document.getElementById("email").value;
   const { error } = await stripe.confirmPayment({
     elements,
     confirmParams: {
       // Make sure to change this to your payment completion page
       return_url: "http://localhost:4242/complete",
-      receipt_email: email,
     },
   });
 
