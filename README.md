@@ -21,14 +21,12 @@
 
 決済機能の全体フローは以下となります。
 
-**決済フロー**  
-![transaction flow](/image/transaction_flow.jpg)
-*決済フロー図*
-
 1. PaymentIntent 作成
 2. Payment Element 表示
 3. confirmPayment
 4. 完了画面
+
+決済フローの詳細は「アーキテクチャと動作原理」に記載しています。
 
 ---
 
@@ -95,8 +93,9 @@ http://localhost:4242
 ### 決済フローの詳細
 
 ![transaction flow](/image/transaction_flow.jpg)
-*決済フロー図*
+*決済フロー図　※引用元 (https://docs.stripe.com/payments/accept-a-payment?platform=web&ui=elements#web-create-intent)*
 
+決済フローの詳細手順
 1. ユーザーが書籍を選択
 2. サーバー側（Flask）で商品 ID を元に金額を確定
 3. `/create-payment-intent` にて PaymentIntent を作成
@@ -107,22 +106,14 @@ http://localhost:4242
 6. `stripe.confirmPayment()` により支払い確定
 7. 完了画面で PaymentIntent を取得し、結果を表示
 
+※ 本デモでは決済後のサーバーのその他の処理は不要な前提のため未実装
+
 ### 使用している Stripe API / 機能
 - `stripe.PaymentIntent.create`
 - `stripe.PaymentIntent.retrieve`
 - Stripe Payment Element
 - Link Authentication Element
 - `stripe.confirmPayment`
-
-### 金額と通貨の扱いについて
-Stripe の `amount` は 最小通貨単位で返却されるため、
-通貨に応じて表示ロジックを分けています。
-
-- USD / EUR など：`amount / 100` → `$23.00`
-- JPY（ゼロディシマル通貨）：そのまま表示 → `¥2,300`
-
-表示には `Intl.NumberFormat` を用い、
-JPY / USD 両対応の共通フォーマッタとして実装しています。
 
 ### 問題へのアプローチと設計判断
 #### 元リポジトリを極力変更しない方針
@@ -131,10 +122,17 @@ JPY / USD 両対応の共通フォーマッタとして実装しています。
 - 既存の `/checkout` バリデーションを活用
 
 #### セキュリティを考慮した設計
-- 金額はクライアントから受け取らず、サーバーで確定
+- 金額はクライアントから受け取らず、サーバーで確定(改ざん防止)
 - `.env` はサーバー側のみで使用
 - Publishable Key のみを HTML 経由でクライアントに渡す
 - Secret Key はクライアントに露出させない
+
+#### 金額と通貨の扱い
+- Stripe の `amount` は 最小通貨単位で返却されるため、
+通貨に応じて表示ロジックを分ける仕組みを追加
+    - USD / EUR など：`amount / 100` → `$23.00`
+    - JPY（ゼロディシマル通貨）：そのまま表示 → `¥2,300`
+- 通貨は USD / JPY / EUR に対応
 
 ### 参照したドキュメント
 - Stripe DOCS – Accept a payment (Advanced integration)
