@@ -1,30 +1,151 @@
-# Take home project
-This is a simple e-commerce application that a customer can use to purchase a book, but it's missing the payments functionality — your goal is to integrate Stripe to get this application running!
+# Stripe Payment Element を用いた書籍購入アプリ（Take-Home Project）
 
-## Candidate instructions
-You'll receive these in email.
+## 概要
 
-## Application overview
-This demo is written in Python with the [Flask framework](https://flask.palletsprojects.com/). You'll need to retrieve a set of testmode API keys from the Stripe dashboard (you can create a free test account [here](https://dashboard.stripe.com/register)) to run this locally.
+本リポジトリは、Stripe の Take-Home 課題として提供されたシンプルな書籍購入アプリケーションに対し、**Stripe Payment Element を用いた決済機能を統合**した実装です。
 
-We're using the [Bootstrap](https://getbootstrap.com/docs/4.6/getting-started/introduction/) CSS framework. It's the most popular CSS framework in the world and is pretty easy to get started with — feel free to modify styles/layout if you like. 
+ユーザーは以下の操作を行うことができます。
 
-To simplify this project, we're also not using any database here, either. Instead `app.py` includes a simple case statement to read the GET params for `item`. 
+- 購入する書籍を選択
+- メールアドレスを入力
+- Stripe Payment Element を用いて支払い
+- 購入完了画面で以下を確認
+  - 請求総額（通貨フォーマット済み）
+  - Stripe Payment Intent ID（`pi_` で始まる）
 
-To get started, clone the repository and run pip3 to install dependencies:
+本実装では **Stripe Checkout は使用せず**、Stripe が推奨する **Payment Intent + Payment Element** による構成を採用しています。
 
+---
+
+## デモの決済フロー（全体像）
+
+決済機能の全体フローは以下となります。
+
+**決済フロー**  
+![transaction flow](/image/transaction_flow.jpg)
+（PaymentIntent 作成 → Payment Element 表示 → confirmPayment → 完了画面）
+
+---
+
+## 技術スタック
+
+- Python 3
+- Flask
+- Stripe Python SDK
+- Stripe.js v3
+- Stripe Payment Element
+- Vanilla JavaScript
+- HTML / CSS
+
+---
+
+## セットアップ方法
+
+### 1. リポジトリの取得
+
+```bash
+git clone https://github.com/kenakaga/sa-takehome-project-stripe.git
+cd sa-takehome-project-stripe
 ```
-git clone https://github.com/marko-stripe/sa-takehome-project-python && cd sa-takehome-project-python
-pip3 install -r requirements.txt
+
+### 2. 依存関係のインストール
+
+```bash
+pip install -r requirements.txt
 ```
 
-Rename `sample.env` to `.env` and populate it with your Stripe account's test API keys.
+### 3. Stripeアカウントの作成
+Stripeのフリーアカウントを以下のURLから作成します。
 
-Then run the application locally:
+- Create your Stripe account
+https://dashboard.stripe.com/register
 
+### 3. 環境変数の設定
+`.env` ファイルを作成し、Stripe の API キーを設定します。
+```env
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
-flask run
+※ Secret Key はサーバー側のみで使用し、
+
+クライアントには Publishable Key のみを渡しています。
+
+APIキーはStrip Dashboardより確認します。
+![api key](/image/api_key.jpg)
+※ 本デモではSandboxアカウントAPIキーを使用します。
+
+### 4. アプリケーション起動
+
+```bash
+flask run -p 4242
+```
+ブラウザで以下にアクセスします。
+```bash
+http://localhost:4242
 ```
 
-Navigate to [http://localhost:5000](http://localhost:5000) to view the index page.
-# sa-takehome-project-stripe
+## アーキテクチャと動作原理
+
+### 決済フローの詳細
+
+1. ユーザーが書籍を選択
+2. サーバー側（Flask）で商品 ID を元に金額を確定
+3. `/create-payment-intent` にて PaymentIntent を作成
+    - 金額は **必ずサーバー側で計算**
+    - メールアドレスを `receipt_email` に設定
+4. クライアントに `client_secret` を返却
+5. Stripe Payment Element を表示
+6. `stripe.confirmPayment()` により支払い確定
+7. 完了画面で PaymentIntent を取得し、結果を表示
+
+### 使用している Stripe API / 機能
+- `stripe.PaymentIntent.create`
+- `stripe.PaymentIntent.retrieve`
+- Stripe Payment Element
+- `stripe.confirmPayment`
+- `receipt_email` によるレシート送信設定
+
+### 金額と通貨の扱いについて
+Stripe の `amount` は 最小通貨単位で返却されるため、
+通貨に応じて表示ロジックを分けています。
+
+- USD / EUR など：`amount / 100` → `$23.00`
+- JPY（ゼロディシマル通貨）：そのまま表示 → `¥2,300`
+
+表示には `Intl.NumberFormat` を用い、
+JPY / USD 両対応の共通フォーマッタとして実装しています。
+
+### 問題へのアプローチと設計判断
+#### 元リポジトリを極力変更しない方針
+- 既存の UI / 商品選択ロジックは尊重
+- 決済に必要な最小限のコードのみを追加
+- 既存の `/checkout` バリデーションを活用
+
+#### セキュリティを考慮した設計
+- 金額はクライアントから受け取らず、サーバーで確定
+- `.env` はサーバー側のみで使用
+- Publishable Key のみを HTML 経由でクライアントに渡す
+- Secret Key はクライアントに露出させない
+
+### 参照したドキュメント
+- Stripe – Accept a payment
+https://docs.stripe.com/payments/accept-a-payment
+
+- Stripe – Payment Element Quickstart
+https://docs.stripe.com/payments/quickstart
+
+### 今後の拡張案（より堅牢な構成にする場合）
+- Webhook の追加
+    - `payment_intent.succeeded` を受信し、注文確定を非同期で処理
+    - 完了画面は UX、Webhook を正の情報源にする
+- Stripe Customer の永続化
+    - email と支払い履歴を顧客単位で管理
+- 複数商品（カート）対応
+- Apple Pay / Google Pay の有効化
+- 本番環境向けのエラーハンドリング・ロギング強化
+
+### まとめ
+本アプリケーションは、
+Stripe が推奨する Payment Intent + Payment Element を用いた**シンプルかつ安全な決済フロー**を実装しています。
+
+既存コードを尊重しながら、実運用を見据えた拡張が可能な構成を意識しました。
