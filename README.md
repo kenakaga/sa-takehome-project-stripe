@@ -78,7 +78,7 @@ StripeのAPIキーはStripe Dashboardより確認します。
 ※ 本デモではSandboxアカウントのAPIキーを使用します。
 
 ### 5. アプリケーション起動
-以下コマンドによりFlaskでアプリケーションを起動します。
+以下コマンドによりFlaskのアプリケーションを起動します。
 ```bash
 flask run -p 4242
 ```
