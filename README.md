@@ -1,4 +1,4 @@
-# Stripe Payment Element を用いた書籍購入アプリ（Take-Home Project）
+# Stripe Payment Element を用いた書籍購入アプリケーション（Take-Home Project）
 
 ## 概要
 
@@ -23,7 +23,12 @@
 
 **決済フロー**  
 ![transaction flow](/image/transaction_flow.jpg)
-（PaymentIntent 作成 → Payment Element 表示 → confirmPayment → 完了画面）
+*決済フロー図*
+
+1. PaymentIntent 作成
+2. Payment Element 表示
+3. confirmPayment
+4. 完了画面
 
 ---
 
@@ -55,27 +60,27 @@ pip install -r requirements.txt
 ```
 
 ### 3. Stripeアカウントの作成
-Stripeのフリーアカウントを以下のURLから作成します。
+Stripeのアカウントを以下URLから作成します。
 
 - Create your Stripe account
 https://dashboard.stripe.com/register
 
-### 3. 環境変数の設定
+### 4. 環境変数の設定
 `.env` ファイルを作成し、Stripe の API キーを設定します。
 ```env
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
-※ Secret Key はサーバー側のみで使用し、
+※ Secret Key はサーバー側のみで使用し、クライアントには Publishable Key のみを渡しています。
 
-クライアントには Publishable Key のみを渡しています。
-
-APIキーはStrip Dashboardより確認します。
+StripeのAPIキーはStripe Dashboardより確認します。
 ![api key](/image/api_key.jpg)
-※ 本デモではSandboxアカウントAPIキーを使用します。
+*(例) Stripe DashboardのAPI Keys*
 
-### 4. アプリケーション起動
+※ 本デモではSandboxアカウントのAPIキーを使用します。
 
+### 5. アプリケーション起動
+以下コマンドによりFlaskでアプリケーションを起動します。
 ```bash
 flask run -p 4242
 ```
@@ -83,18 +88,22 @@ flask run -p 4242
 ```bash
 http://localhost:4242
 ```
+以上でセットアップは完了です。
 
 ## アーキテクチャと動作原理
 
 ### 決済フローの詳細
 
+![transaction flow](/image/transaction_flow.jpg)
+*決済フロー図*
+
 1. ユーザーが書籍を選択
 2. サーバー側（Flask）で商品 ID を元に金額を確定
 3. `/create-payment-intent` にて PaymentIntent を作成
     - 金額は **必ずサーバー側で計算**
-    - メールアドレスを `receipt_email` に設定
 4. クライアントに `client_secret` を返却
 5. Stripe Payment Element を表示
+    - ユーザーはemailアドレスを入力
 6. `stripe.confirmPayment()` により支払い確定
 7. 完了画面で PaymentIntent を取得し、結果を表示
 
@@ -102,8 +111,8 @@ http://localhost:4242
 - `stripe.PaymentIntent.create`
 - `stripe.PaymentIntent.retrieve`
 - Stripe Payment Element
+- Link Authentication Element
 - `stripe.confirmPayment`
-- `receipt_email` によるレシート送信設定
 
 ### 金額と通貨の扱いについて
 Stripe の `amount` は 最小通貨単位で返却されるため、
@@ -128,11 +137,20 @@ JPY / USD 両対応の共通フォーマッタとして実装しています。
 - Secret Key はクライアントに露出させない
 
 ### 参照したドキュメント
-- Stripe – Accept a payment
-https://docs.stripe.com/payments/accept-a-payment
+- Stripe DOCS – Accept a payment (Advanced integration)
+https://docs.stripe.com/payments/accept-a-payment?platform=web&ui=elements
 
-- Stripe – Payment Element Quickstart
+- Stripe DOCS – Payment Element Quickstart
 https://docs.stripe.com/payments/quickstart
+
+- Stripe DOCS – Link Authentication Element
+https://docs.stripe.com/payments/elements/link-authentication-element
+
+- Stripe DOCS - Compare features and availability
+https://docs.stripe.com/payments/online-payments#compare-features-and-availability
+
+- Stripe API - Payment Intents
+https://docs.stripe.com/api/payment_intents
 
 ### 今後の拡張案（より堅牢な構成にする場合）
 - Webhook の追加
