@@ -95,7 +95,7 @@ http://localhost:4242
 ![transaction flow](/image/transaction_flow.jpg)
 *決済フロー図　※引用元 (https://docs.stripe.com/payments/accept-a-payment?platform=web&ui=elements#web-create-intent)*
 
-決済フローの詳細手順
+**決済フローの詳細手順**
 1. ユーザーが書籍を選択
 2. サーバー側（Flask）で商品 ID を元に金額を確定
 3. `/create-payment-intent` にて PaymentIntent を作成
