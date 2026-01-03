@@ -26,7 +26,7 @@
 3. confirmPayment
 4. 完了画面
 
-決済フローの詳細は「アーキテクチャと動作原理」に記載しています。
+決済フローの詳細は「アーキテクチャと設計方針」に記載しています。
 
 ---
 
@@ -86,9 +86,9 @@ flask run -p 4242
 ```bash
 http://localhost:4242
 ```
-以上でセットアップは完了です。
+以上、セットアップは完了です。
 
-## アーキテクチャと動作原理
+## アーキテクチャと設計方針
 
 ### 決済フローの詳細
 
@@ -111,9 +111,9 @@ http://localhost:4242
 ### 使用している Stripe API / 機能
 - `stripe.PaymentIntent.create`
 - `stripe.PaymentIntent.retrieve`
+- `stripe.confirmPayment`
 - Stripe Payment Element
 - Link Authentication Element
-- `stripe.confirmPayment`
 
 ### 問題へのアプローチと設計判断
 #### 元リポジトリを極力変更しない方針
