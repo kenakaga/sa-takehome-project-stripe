@@ -51,7 +51,7 @@ def checkout():
 
 # Calculate order amount
 def calculate_order_amount(items):
-    # items: [{"id": "1"}, {"id": "2"}] のように送られてくる想定
+    # Recieve items: [{"id": "1"}, {"id": "2"}] ...
     total = 0
     for item in items:
         product = PRODUCTS.get(str(item["id"]))

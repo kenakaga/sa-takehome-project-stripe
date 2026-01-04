@@ -104,7 +104,8 @@ http://localhost:4242
 5. Stripe Payment Element を表示
     - ユーザーはemailアドレスを入力
 6. `stripe.confirmPayment()` により支払い確定
-7. 完了画面で PaymentIntent を取得し、結果を表示
+7. 完了画面にリダイレクト(`return_url`)
+8. 完了画面で PaymentIntent を取得し、結果を表示
 
 ※ 本デモでは決済後のサーバーのその他の処理は不要な前提のため未実装
 
