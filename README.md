@@ -133,7 +133,7 @@ http://localhost:4242
 通貨に応じて表示ロジックを分ける仕組みを追加
     - USD / EUR など：`amount / 100` → `$23.00`
     - JPY（ゼロディシマル通貨）：そのまま表示 → `¥2,300`
-- 通貨は USD / JPY / EUR に対応
+- 通貨記号は USD($) / JPY(¥) / EUR(€) に対応
 
 ### 参照したドキュメント
 - Stripe DOCS – Accept a payment (Advanced integration)
@@ -159,6 +159,7 @@ https://docs.stripe.com/api/payment_intents
     - email と支払い履歴を顧客単位で管理
 - 複数商品（カート）対応
 - Apple Pay / Google Pay の有効化
+- 通貨の
 - 本番環境向けのエラーハンドリング・ロギング強化
 
 ### まとめ
