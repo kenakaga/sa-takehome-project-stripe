@@ -16,7 +16,7 @@ app = Flask(__name__,
   template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "views"),
   static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "public"))
 
-# Just hardcoding amounts here to avoid using a database
+# Just hardcoding amounts here to avoid using a database as the type of dictionary
 PRODUCTS = {
     "1": {
         "title": "The Art of Doing Science and Engineering",
