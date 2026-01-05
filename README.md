@@ -88,6 +88,34 @@ http://localhost:4242
 ```
 以上、セットアップは完了です。
 
+## デモ実行手順
+
+### 1. 書籍選択
+Top Pageから購入したい書籍を選択します。
+
+![top page](/image/top_page.jpg)
+*(例) Stripe Press Shop - Top Page*
+
+### 2. 決済
+Checkout Pageで必要な決済情報を入力し、「Pay Now」を選択します。
+
+![checkout page](image/checkout_page.jpg)
+*(例) Checkout Page*
+
+### 3. 完了画面
+完了画面にリダイレクトされるので、決済が完了したことを確認します。
+
+![complete page](image/complete_page.jpg)
+*(例) 決済完了画面*
+
+### 4. Stripe Dashboardの決済確認
+完了画面のView Detailをクリックすると、Stripe Dashboard - Transactionsに遷移しますので、決済内容(金額、Payment方法、Payment IDなど)が正しいか確認します。
+
+![stripe dashboard](image/stripe_dashboard.jpg)
+*(例) Stripe Dashboard - transactions*
+
+以上、実行手順となります。
+
 ## アーキテクチャと設計方針
 
 ### 決済フローの詳細
