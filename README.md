@@ -109,7 +109,7 @@ Checkout Pageで必要な決済情報を入力し、「Pay Now」を選択しま
 *(例) 決済完了画面*
 
 ### 4. Stripe Dashboardの決済確認
-完了画面のView Detailをクリックすると、Stripe Dashboard - Transactionsに遷移しますので、決済内容(金額、Payment方法、Payment IDなど)が正しいか確認します。
+完了画面のView Detailをクリックすると、Stripe Dashboard - Transactionsに遷移しますので、決済内容(Email、金額、Payment方法など)が正しいか確認します。
 
 ![stripe dashboard](image/stripe_dashboard.jpg)
 *(例) Stripe Dashboard - transactions*
