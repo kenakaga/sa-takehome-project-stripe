@@ -32,13 +32,10 @@ Stripe Payment Elementを用いた決済機能の全体フローは以下とな�
 
 ## 技術スタック
 
-- Python 3
-- Flask
-- Stripe Python SDK
-- Stripe.js v3
-- Stripe Payment Element
-- Vanilla JavaScript
-- HTML / CSS
+- Backend: Python, Flask
+- Frontend: HTML, CSS, Vanilla JavaScript
+- Payments: Stripe API, Stripe.js v3, Stripe Payment Element, Stripe Link Authentication Element
+- Configuration: dotenv
 
 ---
 
@@ -142,7 +139,7 @@ Checkout Pageで必要な決済情報を入力し、「Pay Now」を選択しま
 - `stripe.PaymentIntent.retrieve`
 - `stripe.confirmPayment`
 - Stripe Payment Element
-- Link Authentication Element
+- Stripe Link Authentication Element
 
 ### 問題へのアプローチと設計判断
 #### 元リポジトリを極力変更しない方針
